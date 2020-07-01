@@ -17,7 +17,7 @@ jobs:
         os: [windows-latest, ubuntu-latest, macos-latest]
         build_type: ["Release"]
         architecture: ["x64",]
-        python_version: [2.7]
+        python_version: [2.7, 3.6]
         generator: ["Visual Studio 16 2019", "Unix Makefiles", "Ninja"]
         exclude:
         - os: ubuntu-latest
