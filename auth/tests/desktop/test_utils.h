@@ -266,10 +266,15 @@ class AuthStateChangesCounter : public detail::ListenerChangeCounter,
 class SleepUponDestruction {
   public:
   ~SleepUponDestruction() {
-    firebase::internal::Sleep(200);
+    //firebase::internal::Sleep(200);
   }
 };
 
+class SleepUponDestruction1 {
+  public:
+  ~SleepUponDestruction1() {
+    firebase::internal::Sleep(200);
+  }
 
 // Waits until the given future is complete and asserts that it completed with
 // the given error (no error by default). Returns the future's result.
