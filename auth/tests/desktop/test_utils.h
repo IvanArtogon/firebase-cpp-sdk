@@ -273,7 +273,7 @@ class SleepUponDestruction {
 class SleepUponDestruction1 {
   public:
   ~SleepUponDestruction1() {
-    firebase::internal::Sleep(10);
+    firebase::internal::Sleep(50);
   }
 };
 
