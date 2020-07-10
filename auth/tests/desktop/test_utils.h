@@ -275,6 +275,7 @@ class SleepUponDestruction1 {
   ~SleepUponDestruction1() {
     firebase::internal::Sleep(200);
   }
+};
 
 // Waits until the given future is complete and asserts that it completed with
 // the given error (no error by default). Returns the future's result.
