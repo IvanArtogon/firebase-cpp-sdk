@@ -43,6 +43,7 @@ using test::InitializeConfigWithAFake;
 using test::InitializeConfigWithFakes;
 using test::OAuthProviderTestHandler;
 using test::SleepUponDestruction;
+using test::SleepUponDestruction1;
 using test::VerifySignInResult;
 using test::WaitForFuture;
 
