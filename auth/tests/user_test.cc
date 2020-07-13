@@ -25,6 +25,7 @@
 #include "app/tests/include/firebase/app_for_testing.h"
 #include "auth/src/include/firebase/auth.h"
 #include "auth/src/include/firebase/auth/user.h"
+#include "app/src/time.h"
 
 #if defined(FIREBASE_ANDROID_FOR_DESKTOP)
 #undef __ANDROID__
