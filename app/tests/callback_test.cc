@@ -323,7 +323,7 @@ TEST_F(CallbackTest, CallCallbackStdFunction) {
 // callbacks added to a different thread to the dispatching thread.
 // Also, make sure it's possible to remove a callback from the queue while
 // executing a callback.
-TEST_F(CallbackTest, ThreadedCallbackValue1Ordered) {
+TEST_F(CallbackTest, DISABELD_ThreadedCallbackValue1Ordered) {
   bool running = true;
   void* callback_entry_to_remove = nullptr;
   Thread pollingThread(
