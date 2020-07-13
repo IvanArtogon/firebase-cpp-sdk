@@ -173,7 +173,7 @@ class UserTest : public ::testing::Test {
   }
 
   void TearDown() override {
-    firebase_app_->SignOut();
+    firebase_auth_->SignOut();
 
     // Wait for the app to finish any remaining tasks in queue,
     // specifically delete app data from persistent cache after SignOut.
