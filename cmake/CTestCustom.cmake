@@ -21,4 +21,6 @@ set(CTEST_CUSTOM_TESTS_IGNORE
     # Tests from zlib, that can't be disabled normally.
     example
     example64
+    # Test from firestore, this requires plist files
+    firestore_objc_integration_test
 )
