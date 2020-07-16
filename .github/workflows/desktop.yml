@@ -132,7 +132,6 @@ jobs:
           key: dev-test-ccache-${{ env.MATRIX_UNIQUE_NAME }}
 
       - name: Configure 
-        if: false
         shell: bash
         run: |
           mkdir build
@@ -147,7 +146,6 @@ jobs:
             -DFIREBASE_FORCE_FAKE_SECURE_STORAGE=ON
 
       - name: Build
-        if: false
         shell: bash
         run: cmake --build build --config ${{ matrix.build_type }} -j 8
 
@@ -156,7 +154,6 @@ jobs:
         run: ccache -s
 
       - name: Print built libraries
-        if: false
         shell: bash
         run: |
           find build -name "*.lib"
@@ -166,7 +163,6 @@ jobs:
           find build -name "*.so"
 
       - name: Run tests
-        if: false
         env:
           LANG: en_US
         run: |
