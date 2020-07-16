@@ -28,7 +28,8 @@ ExternalProject_Add(
   firestore
 
   DOWNLOAD_DIR ${FIREBASE_DOWNLOAD_DIR}
-  URL https://github.com/firebase/firebase-ios-sdk/archive/${version}.tar.gz
+  # URL https://github.com/firebase/firebase-ios-sdk/archive/${version}.tar.gz
+  URL https://github.com/firebase/firebase-ios-sdk/archive/Firestore-1.16.2.tar.gz
 
   PREFIX ${PROJECT_BINARY_DIR}
 
