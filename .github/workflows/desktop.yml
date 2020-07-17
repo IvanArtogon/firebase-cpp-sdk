@@ -167,4 +167,4 @@ jobs:
           LANG: en_US
         run: |
           cd build
-          ctest --verbose -E "firestore_util_test"
+          ctest --verbose -E "firestore_(util|objc_spec)_test"
