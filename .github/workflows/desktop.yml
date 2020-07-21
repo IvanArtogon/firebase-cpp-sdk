@@ -51,7 +51,7 @@ jobs:
           echo "::set-env name=VCPKG_RESPONSE_FILE::external/vcpkg_${{ matrix.vcpkg_triplet }}_response_file.txt"
           echo "::set-env name=PIP_REQUIREMENTS_FILE::external/pip_requirements.txt"
           echo "::set-env name=MATRIX_UNIQUE_NAME::${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.architecture }}-${{ matrix.python_version }}-${{ matrix.generator }}"
-          echo "::set-env name=BUILD_TYPE:$(echo -e "${{matrix.generator}}" | tr -d '[:space:]')""
+          echo "::set-env name=BUILD_TYPE::$(echo -e "${{matrix.generator}}" | tr -d '[:space:]')"
           echo ${{ BUILD_TYPE }}
           
 
