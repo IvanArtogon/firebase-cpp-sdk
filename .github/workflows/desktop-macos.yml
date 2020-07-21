@@ -14,29 +14,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        os: [macos-latest]
         build_type: ["Release", "Debug"]
         architecture: ["x64",]
         python_version: [2.7]
-        generator: ["Visual Studio 16 2019", "Unix Makefiles", "Ninja"]
-        exclude:
-        - os: ubuntu-latest
-          generator: "Visual Studio 16 2019"
-        - os: macos-latest
-          generator: "Visual Studio 16 2019"
-        - os: windows-latest
-          generator: "Unix Makefiles"
-        - os: windows-latest
-          generator: "Ninja"
-
+        generator: ["Unix Makefiles", "Ninja"]
         include:
-        - os: windows-latest
-          architecture: "x64"
-          vcpkg_triplet: "x64-windows-static"
-          msbuild_platform: "x64"
-        - os: ubuntu-latest
-          architecture: "x64"
-          vcpkg_triplet: "x64-linux"
         - os: macos-latest
           architecture: "x64"
           vcpkg_triplet: "x64-osx"
@@ -52,36 +35,16 @@ jobs:
           echo "::set-env name=PIP_REQUIREMENTS_FILE::external/pip_requirements.txt"
           echo "::set-env name=MATRIX_UNIQUE_NAME::${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.architecture }}-${{ matrix.python_version }}-${{ matrix.generator }}"
           echo "::set-env name=BUILD_TYPE_NO_SPACES::$(echo -e "${{matrix.generator}}" | tr -d '[:space:]')"
-          echo ${{ env.BUILD_TYPE_NO_SPACES }}
-          
 
-      - name: Install Ninja (windows)
-        if: startsWith(matrix.generator, 'Ninja') && startsWith(matrix.os, 'windows')
-        run: |
-          choco install ninja
-
-      - name: Install Ninja (mac)
-        if: startsWith(matrix.generator, 'Ninja') && startsWith(matrix.os, 'macos')
+      - name: Install Ninja
+        if: startsWith(matrix.generator, 'Ninja')
         run: |
           brew install ninja
 
-      - name: Install Ninja (linux)
-        if: startsWith(matrix.generator, 'Ninja') && startsWith(matrix.os, 'ubuntu')
-        run: |
-          sudo apt install ninja-build
-
-      - name: Install system level applications (mac)
-        if: startsWith(matrix.os, 'macos')
+      - name: Install system level applications
         id: macos-brew-install
         run: |
           brew install ccache
-          echo "::set-env name=CCACHE_INSTALLED::1"
-
-      - name: Install system level applications (linux)
-        if: startsWith(matrix.os, 'ubuntu')
-        id: ubuntu-apt-install
-        run: |
-          sudo apt install ccache
           echo "::set-env name=CCACHE_INSTALLED::1"
 
       - name: Cache vcpkg C++ dependencies
@@ -91,14 +54,8 @@ jobs:
           path: external/vcpkg/installed
           key: dev-vcpkg-${{ matrix.vcpkg_triplet }}-${{ hashFiles(format('{0}', env.VCPKG_RESPONSE_FILE)) }}-${{ hashFiles('.git/modules/external/vcpkg/HEAD') }}
 
-      - name: Install vcpkg packages (windows)
-        if: steps.cache_vcpkg.outputs.cache-hit!='true' && startsWith(matrix.os, 'windows')
-        run: |
-          ${{ github.workspace }}/external/vcpkg/bootstrap-vcpkg.bat -disableMetrics
-          ${{ github.workspace }}/external/vcpkg/vcpkg install @${{env.VCPKG_RESPONSE_FILE}}
-
-      - name: Install vcpkg packages (mac and linux)
-        if: steps.cache_vcpkg.outputs.cache-hit!='true' && startsWith(matrix.os, 'windows')!='true'
+      - name: Install vcpkg packages
+        if: steps.cache_vcpkg.outputs.cache-hit!='true'
         run: |
           ${{ github.workspace }}/external/vcpkg/bootstrap-vcpkg.sh -disableMetrics
           ${{ github.workspace }}/external/vcpkg/vcpkg install @${{env.VCPKG_RESPONSE_FILE}}
@@ -153,7 +110,7 @@ jobs:
         shell: bash
         run: cmake --build build --config ${{ matrix.build_type }} -j 8
 
-      - name: Stats for ccache (mac and linux)
+      - name: Stats for ccache
         if: env.CCACHE_INSTALLED
         run: ccache -s
 
@@ -166,47 +123,23 @@ jobs:
           find build -name "*.a"
           find build -name "*.so"
 
-      - name: Prep crash support (linux)
-        # Ensures directory structure is in place to capture core files on Linux. 
-        if: startsWith(matrix.build_type, 'Debug') && startsWith(matrix.os, 'ubuntu')
-        shell: bash
-        run: |
-          echo '/tmp/cores/core.%E' | sudo tee /proc/sys/kernel/core_pattern
-          sudo mkdir -p /tmp/cores/
-          sudo rm -rf /tmp/cores/*
-          
-      - name: Prep crash support (mac)
+      - name: Prep crash support
         # Ensures no lingering crashes from the previous run.
-        if: startsWith(matrix.os, 'macos')
         run: |
           rm -rf ~/Library/Logs/DiagnosticReports/*
           
-      - name: Run tests (windows & macos)
-        if: startsWith(matrix.os, 'windows') || startsWith(matrix.os, 'macos')
+      - name: Run tests
         env:
           LANG: en_US
         run: |
           cd build
           ctest --verbose
-
-      - name: Run tests (linux)
-        # Linux exists as its own standalone execution step in order to invoke
-        # platform-specific `ulimit` to enable crash collection.  The ulimit
-        # command must be invoked in same shell instance of that runs the
-        # tests.
-        if: startsWith(matrix.os, 'ubuntu')
-        env:
-          LANG: en_US
-        run: |
-          ulimit -c unlimited 
-          cd build
-          sudo ctest --verbose
       
-      - name: Prep bins for achive (linux)
+      - name: Prep bins for archive
         # Copies all of the binary files into one directory for ease in
         # archiving. Directory contents are then marked readable for the
         # archive step.
-        if: failure() && startsWith(matrix.build_type, 'Debug') && ( startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos') )
+        if: failure() && startsWith(matrix.build_type, 'Debug')
         shell: bash
         run: |
           sudo rm -rf /tmp/bins/* || :
@@ -215,34 +148,17 @@ jobs:
           sudo cp -f ./build/*/tests/firebase* /tmp/bins
           sudo chmod -R +rwx /tmp/bins/* || :
 
-      - name: Prep crash data for archive (linux)
-        # Marks the contents of the core dump directory to be readable for the
-        # archiving step on linux.
-        shell: bash
-        if: failure() && startsWith(matrix.build_type, 'Debug') && startsWith(matrix.os, 'ubuntu')
-        run: |
-          sudo chmod -R +rwx /tmp/cores/* || :
-
-      - name: Prep crash data for archive (macos)
+      - name: Prep crash data for archive
         # Freshly made diagnostic reports are marked as readable for
         # the archive step. Note: for some reason /tmp/cores doesn't survive
         # long enough for archiving on mac, so prep the DiagnosticReports
         # directory instead.
         shell: bash
-        if: failure() && startsWith(matrix.build_type, 'Debug') && startsWith(matrix.os, 'macos')
+        if: failure() && startsWith(matrix.build_type, 'Debug')
         run: |
           sudo chmod -R +rwx ~/Library/Logs/DiagnosticReports/* || :           
 
-      - name: Archive crashes and binaries (linux)
-        uses: actions/upload-artifact@v2
-        if: failure() && startsWith(matrix.build_type, 'Debug') && startsWith(matrix.os, 'ubuntu')
-        with:
-          name: crashes-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.architecture }}-${{ matrix.python_version }}-${{ env.BUILD_TYPE_NO_SPACES }}
-          path: |
-            /tmp/cores/*
-            /tmp/bins/*
-
-      - name: Archive crashes (mac)
+      - name: Archive crashes
         uses: actions/upload-artifact@v2
         if: failure() && startsWith(matrix.build_type, 'Debug') && startsWith(matrix.os, 'macos')
         with:
