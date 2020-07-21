@@ -41,12 +41,6 @@ jobs:
         run: |
           choco install ninja
 
-      - name: Install system level applications
-        id: macos-brew-install
-        run: |
-          brew install ccache
-          echo "::set-env name=CCACHE_INSTALLED::1"
-
       - name: Cache vcpkg C++ dependencies
         id: cache_vcpkg
         uses: actions/cache@v2
