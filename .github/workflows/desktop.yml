@@ -52,9 +52,9 @@ jobs:
           echo "::set-env name=PIP_REQUIREMENTS_FILE::external/pip_requirements.txt"
           echo "::set-env name=MATRIX_UNIQUE_NAME::${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.architecture }}-${{ matrix.python_version }}-${{ matrix.generator }}"
           GENERATOR_NOWHITESPACE=$(echo -e "${{matrix.generator}}" | tr -d '[:space:]')"
-          echo ${GENERATOR_NOWHITESPACE}
-          echo "::set-env name=BUILD_TYPE::${GENERATOR_NOWHITESPACE}
-          echo ${BUILD_TYPE}
+          echo ${{ GENERATOR_NOWHITESPACE }}
+          echo "::set-env name=BUILD_TYPE:$(echo -e "${{matrix.generator}}" | tr -d '[:space:]')""
+          echo ${{ BUILD_TYPE }}
           
 
       - name: Install Ninja (windows)
@@ -243,7 +243,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure() && startsWith(matrix.generator, 'Unix Makefiles') && startsWith(matrix.build_type, 'Debug') && startsWith(matrix.os, 'ubuntu')
         with:
-          name: crashes-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.architecture }}-${{ matrix.python_version }}-${BUILD_TYPE}
+          name: crashes-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.architecture }}-${{ matrix.python_version }}-${{BUILD_TYPE}}
           path: |
             /tmp/cores/*
             /tmp/bins/*
@@ -252,7 +252,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure() && startsWith(matrix.generator, 'Ninja') && startsWith(matrix.build_type, 'Debug') && startsWith(matrix.os, 'ubuntu')
         with:
-          name: crashes-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.architecture }}-${{ matrix.python_version }}-${BUILD_TYPE}
+          name: crashes-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.architecture }}-${{ matrix.python_version }}-${{BUILD_TYPE}}
           path: |
             /tmp/cores/*
             /tmp/bins/*
@@ -261,7 +261,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure() && startsWith(matrix.generator, 'Unix Makefiles') && startsWith(matrix.build_type, 'Debug') && startsWith(matrix.os, 'macos')
         with:
-          name: crashes-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.architecture }}-${{ matrix.python_version }}-${BUILD_TYPE}
+          name: crashes-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.architecture }}-${{ matrix.python_version }}-${{BUILD_TYPE}}
           path: |
             ~/Library/Logs/DiagnosticReports/*
             /tmp/bins/*
@@ -270,7 +270,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure() && startsWith(matrix.generator, 'Ninja') && startsWith(matrix.build_type, 'Debug') && startsWith(matrix.os, 'macos')
         with:
-          name: crashes-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.architecture }}-${{ matrix.python_version }}-${BUILD_TYPE}
+          name: crashes-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.architecture }}-${{ matrix.python_version }}-${{BUILD_TYPE}}
           path: |
             ~/Library/Logs/DiagnosticReports/*
             /tmp/bins/*
