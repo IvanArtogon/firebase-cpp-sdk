@@ -12,9 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#ifdef _WINRT
+#include <Windows.h>
+#else
 #include <direct.h>
 #include <shlobj.h>
 #include <stringapiset.h>
+#endif
 
 #include <iostream>
 #include <string>
@@ -37,7 +41,11 @@ static std::string utf8_encode(const std::wstring& wstr) {
 }
 
 std::string GetAppDataPath(const char* app_name, bool should_create) {
-  wchar_t* pwstr = nullptr;
+#ifdef _WINRT
+    LogAssert("DeleteAllData - Not implemented in WINRT");
+    return std::string();
+#else
+    wchar_t* pwstr = nullptr;
   HRESULT result = SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, NULL, &pwstr);
   if (result != S_OK) {
     return "";
@@ -51,6 +59,7 @@ std::string GetAppDataPath(const char* app_name, bool should_create) {
     if (retval != 0 && errno != EEXIST) return "";
   }
   return dir + "\\" + app_name;
+#endif
 }
 
 }  // namespace internal
