@@ -89,6 +89,9 @@ is a little tricky. The following steps can be used as a guide:
 Note: For x64 builds folder needs to be **vsprojects\x64** and change **Win32**
 in cmake command to **x64**
 
+Ivan:
+  Also required perl, go. For UWP I used prebuilt flatc.exe, it must in path env var. Python27 also must be in the path.
+
 ### Prerequisites for Mac
 Home brew can be used to install required dependencies:
 
@@ -149,6 +152,12 @@ mkdir desktop_build && cd desktop_build
 cmake ..
 cmake --build . --target firebase_analytics
 ```
+
+Ivan: 
+I used 
+cmake .. -DOPENSSL_ROOT_DIR=D:\OpenSSL-Win32 -DBUILD_TESTING=OFF
+For UWP
+cmake .. -DOPENSSL_ROOT_DIR=D:\OpenSSL-Win32 -DBUILD_TESTING=OFF -DCMAKE_SYSTEM_NAME=WindowsStore -DCMAKE_SYSTEM_VERSION='10.0'
 
 Note that you can provide a different generator on the configure step, for
 example to generate a project for Visual Studio 2017, you could run:

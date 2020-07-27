@@ -43,7 +43,11 @@ namespace internal {
 // Get the current locale, e.g. "en_US"
 std::string GetLocale() {
 #if FIREBASE_PLATFORM_WINDOWS
+#ifdef _WINRT
+  LCID lang_id = LOCALE_USER_DEFAULT;
+#else
   LCID lang_id = GetThreadLocale();
+#endif
   std::vector<wchar_t> locale_name(LOCALE_NAME_MAX_LENGTH);
   if (LCIDToLocaleName(lang_id, &locale_name[0], LOCALE_NAME_MAX_LENGTH, 0) ==
       0) {
@@ -89,10 +93,10 @@ std::string GetLocale() {
 std::string GetTimezone() {
 #if FIREBASE_PLATFORM_WINDOWS
   // If "TZ" environment variable is defined, use it, else use _get_tzname.
-  int tz_bytes = GetEnvironmentVariable("TZ", nullptr, 0);
+  int tz_bytes = GetEnvironmentVariableA("TZ", nullptr, 0);
   if (tz_bytes > 0) {
     std::vector<char> buffer(tz_bytes);
-    GetEnvironmentVariable("TZ", &buffer[0], tz_bytes);
+    GetEnvironmentVariableA("TZ", &buffer[0], tz_bytes);
     return std::string(&buffer[0]);
   }
   int daylight;  // daylight savings time?

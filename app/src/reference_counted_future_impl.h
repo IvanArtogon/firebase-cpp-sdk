@@ -35,6 +35,10 @@
 #include "app/src/include/firebase/future.h"
 #endif
 
+#ifdef _WINRT
+#pragma warning(disable: 4996)
+#endif
+
 namespace FIREBASE_NAMESPACE {
 
 // FutureBackingData holds the important data for each Future. These are held by

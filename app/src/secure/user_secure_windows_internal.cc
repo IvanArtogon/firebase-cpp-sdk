@@ -76,6 +76,9 @@ std::string UserSecureWindowsInternal::LoadUserData(
     const std::string& app_name) {
   std::string output;
   int idx = 0;
+#ifdef _WINRT
+  LogAssert("LoadUserData - Not implemented in WINRT");
+#else
   // Data comes in chunks, read a chunk at a time until we get a NOT_FOUND
   // error.
   for (;; ++idx) {
@@ -97,6 +100,7 @@ std::string UserSecureWindowsInternal::LoadUserData(
     CredFree(credential);
     output = output + value;
   }
+#endif // _WINRT
   return output;
 }
 
@@ -104,6 +108,9 @@ void UserSecureWindowsInternal::SaveUserData(const std::string& app_name,
                                              const std::string& user_data) {
   // First delete any existing data, so we don't have stale chunks.
   DeleteUserData(app_name);
+#ifdef _WINRT
+  LogAssert("SaveUserData - Not implemented in WINRT");
+#else
   size_t user_data_size = user_data.length();
   for (size_t user_data_offset = 0; user_data_offset < user_data_size;
        user_data_offset += CRED_MAX_CREDENTIAL_BLOB_SIZE) {
@@ -137,10 +144,14 @@ void UserSecureWindowsInternal::SaveUserData(const std::string& app_name,
       return;
     }
   }
+#endif // _WINRT
 }
 
 void UserSecureWindowsInternal::DeleteUserData(const std::string& app_name) {
   int idx = 0;
+#ifdef _WINRT
+  LogAssert("DeleteUserData - Not implemented in WINRT");
+#else
   for (;; ++idx) {
     std::string target = GetTargetName(app_name, idx);
     BOOL success = CredDelete(target.c_str(), CRED_TYPE_GENERIC, 0);
@@ -154,11 +165,15 @@ void UserSecureWindowsInternal::DeleteUserData(const std::string& app_name) {
       return;
     }
   }
+#endif // _WINRT
 }
 
 void UserSecureWindowsInternal::DeleteAllData() {
   // Enumerate all credentials and delete them.
-  std::string wildcard = "*";
+#ifdef _WINRT
+    LogAssert("DeleteAllData - Not implemented in WINRT");
+#else
+    std::string wildcard = "*";
   std::string target_glob = GetTargetName(wildcard);
   DWORD count = 0;
   PCREDENTIAL* credentials = nullptr;
@@ -177,6 +192,7 @@ void UserSecureWindowsInternal::DeleteAllData() {
     }
   }
   CredFree(credentials);
+#endif // _WINRT
 }
 
 }  // namespace secure

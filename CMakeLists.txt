@@ -195,6 +195,15 @@ if((FIREBASE_INCLUDE_DATABASE AND DESKTOP) AND NOT FIREBASE_INCLUDE_FIRESTORE)
   add_external_library(leveldb)
 endif()
 
+if(CMAKE_SYSTEM_NAME MATCHES WindowsPhone OR CMAKE_SYSTEM_NAME MATCHES WindowsStore)
+  set(WINRT TRUE)
+endif(CMAKE_SYSTEM_NAME MATCHES WindowsPhone OR CMAKE_SYSTEM_NAME MATCHES WindowsStore)
+
+if(WINRT)
+  add_compile_definitions(_WINRT)
+  add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
+endif(WINRT)
+
 # Some of the external libraries are not used for mobile.
 if(DESKTOP)
   # Use the static versions of the OpenSSL libraries.

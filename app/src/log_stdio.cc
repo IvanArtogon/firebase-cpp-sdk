@@ -73,7 +73,7 @@ void LogMessageV(LogLevel log_level, const char* format, va_list args) {
     vsnprintf(log_buffer + prefix_length,
               sizeof(log_buffer) - 1 - prefix_length, format, args);  // NOLINT
     log_buffer[sizeof(log_buffer) - 1] = '\0';
-    OutputDebugString(log_buffer);
+    OutputDebugStringA(log_buffer);
   }
 #endif  // FIREBASE_PLATFORM_WINDOWS
 }
