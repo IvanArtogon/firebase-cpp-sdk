@@ -42,8 +42,9 @@ static std::string utf8_encode(const std::wstring& wstr) {
 
 std::string GetAppDataPath(const char* app_name, bool should_create) {
 #ifdef _WINRT
-    LogAssert("DeleteAllData - Not implemented in WINRT");
-    return std::string();
+    //LogAssert("GetAppDataPath - Not implemented in WINRT");
+    LPCWSTR zPath = Windows::Storage::ApplicationData::Current->LocalFolder->Path->Data(); // Use /ZW compiler option
+    return utf8_encode(zPath);
 #else
     wchar_t* pwstr = nullptr;
   HRESULT result = SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, NULL, &pwstr);

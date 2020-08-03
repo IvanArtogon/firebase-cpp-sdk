@@ -15,7 +15,20 @@
 #include "app/src/secure/user_secure_windows_internal.h"
 
 #define NOMINMAX
+
+#ifndef _WINRT
 #include <wincred.h>
+#endif
+
+#ifdef _WINRT
+namespace {
+    Platform::String^ ToPlatformString(const std::string& s)
+    {
+        std::wstring ws(s.begin(), s.end());
+        return ref new Platform::String(ws.c_str());
+    }
+}
+#endif
 
 namespace firebase {
 namespace app {
@@ -75,10 +88,12 @@ static bool LogCredentialError(DWORD error, const char* func,
 std::string UserSecureWindowsInternal::LoadUserData(
     const std::string& app_name) {
   std::string output;
-  int idx = 0;
 #ifdef _WINRT
-  LogAssert("LoadUserData - Not implemented in WINRT");
+  //LogAssert("LoadUserData - Not implemented in WINRT");
+  auto ps = Windows::Storage::ApplicationData::Current->LocalSettings->Values->Lookup(ToPlatformString(app_name))->ToString(); // Use /ZW compiler option
+  output = std::string(ps->Begin(), ps->End());
 #else
+  int idx = 0;
   // Data comes in chunks, read a chunk at a time until we get a NOT_FOUND
   // error.
   for (;; ++idx) {
@@ -109,7 +124,8 @@ void UserSecureWindowsInternal::SaveUserData(const std::string& app_name,
   // First delete any existing data, so we don't have stale chunks.
   DeleteUserData(app_name);
 #ifdef _WINRT
-  LogAssert("SaveUserData - Not implemented in WINRT");
+  //LogAssert("SaveUserData - Not implemented in WINRT");
+  Windows::Storage::ApplicationData::Current->LocalSettings->Values->Insert(ToPlatformString(app_name), ToPlatformString(user_data)); // Use /ZW compiler option
 #else
   size_t user_data_size = user_data.length();
   for (size_t user_data_offset = 0; user_data_offset < user_data_size;
@@ -148,11 +164,12 @@ void UserSecureWindowsInternal::SaveUserData(const std::string& app_name,
 }
 
 void UserSecureWindowsInternal::DeleteUserData(const std::string& app_name) {
-  int idx = 0;
 #ifdef _WINRT
-  LogAssert("DeleteUserData - Not implemented in WINRT");
+  //LogAssert("DeleteUserData - Not implemented in WINRT");
+  Windows::Storage::ApplicationData::Current->LocalSettings->Values->Remove(ToPlatformString(app_name)); // Use /ZW compiler option
 #else
-  for (;; ++idx) {
+    int idx = 0;
+    for (;; ++idx) {
     std::string target = GetTargetName(app_name, idx);
     BOOL success = CredDelete(target.c_str(), CRED_TYPE_GENERIC, 0);
     if (!success) {
@@ -171,7 +188,8 @@ void UserSecureWindowsInternal::DeleteUserData(const std::string& app_name) {
 void UserSecureWindowsInternal::DeleteAllData() {
   // Enumerate all credentials and delete them.
 #ifdef _WINRT
-    LogAssert("DeleteAllData - Not implemented in WINRT");
+    //LogAssert("DeleteAllData - Not implemented in WINRT");
+    Windows::Storage::ApplicationData::Current->LocalSettings->Values->Clear(); // Use /ZW compiler option
 #else
     std::string wildcard = "*";
   std::string target_glob = GetTargetName(wildcard);
