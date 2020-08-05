@@ -147,6 +147,10 @@ void LogMessageWithCallbackV(LogLevel log_level, const char* format,
   static char log_buffer[512] = {0};
   vsnprintf(log_buffer, sizeof(log_buffer) - 1, format, args);
   g_log_callback(log_level, log_buffer, g_log_callback_data);
+
+#ifdef _WINRT
+  OutputDebugStringA(log_buffer);
+#endif
 }
 
 void SetLogLevel(LogLevel level) {
