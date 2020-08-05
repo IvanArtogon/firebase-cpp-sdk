@@ -21,6 +21,7 @@
 #include "app/instance_id/iid_data_generated.h"
 #include "app/rest/transport_curl.h"
 #include "app/rest/transport_interface.h"
+#include "app/rest/transport_builder.h"
 #include "app/rest/util.h"
 #include "app/rest/www_form_url_encoded.h"
 #include "app/src/app_common.h"
@@ -149,7 +150,7 @@ InstanceIdDesktopImpl::InstanceIdDesktopImpl(App* app)
       terminating_(false) {
   rest::InitTransportCurl();
   rest::util::Initialize();
-  transport_.reset(new rest::TransportCurl());
+  transport_.reset(rest::CreateTransport().release());
 
   future_manager().AllocFutureApi(this, kInstanceIdFnCount);
 
