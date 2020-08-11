@@ -70,11 +70,12 @@ RestOperation::RestOperation(StorageInternal* storage_internal,
 
   set_listener(listener);
 
-  transport_.set_is_async(true);
+  transport_.reset(rest::CreateTransport().release());
+  transport_->set_is_async(true);
   // Acquire the mutex to prevent operation from being completed before
   // construction is finished.
   MutexLock lock(mutex_);
-  transport_.Perform(*request_, response_.get(), &rest_controller_);
+  transport_->Perform(*request_, response_.get(), &rest_controller_);
 
   // rest::TransportCurl owns the rest::Controller pointer so as long as this
   // object is alive and rest::Controller is valid.

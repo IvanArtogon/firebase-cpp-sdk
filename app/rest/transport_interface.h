@@ -53,6 +53,8 @@ class Transport {
     PerformInternal(request, response, controller_out);
   }
 
+  virtual void set_is_async(bool is_async) {}
+
  private:
   virtual void PerformInternal(
       Request* request, Response* response,
