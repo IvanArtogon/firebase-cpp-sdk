@@ -202,6 +202,10 @@ cmake --build . --target firebase_analytics
 ```
 
 ### Building with Gradle for Android
+
+export JAVA_HOME="/Applications/Android Studio.app/Contents/jre/jdk/Contents/Home"
+export ANDROID_HOME=/Users/ivankozlov/Library/Android/sdk
+
 When building the Firebase C++ SDK for Android, gradle is used in combination
 with CMake when producing the libraries.  Each Firebase feature is its own
 gradle subproject off of the root directory. The gradle target to build the

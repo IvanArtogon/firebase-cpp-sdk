@@ -41,7 +41,7 @@
 FIREBASE_APP_REGISTER_CALLBACKS(
     storage,
     {
-      FIREBASE_UTIL_RETURN_FAILURE_IF_GOOGLE_PLAY_UNAVAILABLE(*app);
+      // Amazon FIREBASE_UTIL_RETURN_FAILURE_IF_GOOGLE_PLAY_UNAVAILABLE(*app);
       return ::firebase::kInitResultSuccess;
     },
     {

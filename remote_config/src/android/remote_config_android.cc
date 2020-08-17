@@ -219,7 +219,7 @@ InitResult Initialize(const App& app) {
     LogWarning("%s API already initialized", kApiIdentifier);
     return kInitResultSuccess;
   }
-  FIREBASE_UTIL_RETURN_FAILURE_IF_GOOGLE_PLAY_UNAVAILABLE(app);
+  // Amazon FIREBASE_UTIL_RETURN_FAILURE_IF_GOOGLE_PLAY_UNAVAILABLE(app);
   internal::RegisterTerminateOnDefaultAppDestroy();
 
   LogDebug("%s API Initializing", kApiIdentifier);
