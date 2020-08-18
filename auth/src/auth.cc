@@ -46,7 +46,7 @@
 FIREBASE_APP_REGISTER_CALLBACKS(
     auth,
     {
-      //Amazon FIREBASE_UTIL_RETURN_FAILURE_IF_GOOGLE_PLAY_UNAVAILABLE(*app);
+      FIREBASE_UTIL_RETURN_FAILURE_IF_GOOGLE_PLAY_UNAVAILABLE(*app);
       return ::firebase::kInitResultSuccess;
     },
     {
@@ -75,7 +75,7 @@ Auth* Auth::GetAuth(App* app, InitResult* init_result_out) {
     return existing_auth;
   }
 
-  // Amazon FIREBASE_UTIL_RETURN_NULL_IF_GOOGLE_PLAY_UNAVAILABLE(*app, init_result_out);
+  FIREBASE_UTIL_RETURN_NULL_IF_GOOGLE_PLAY_UNAVAILABLE(*app, init_result_out);
 
   // Create the platform dependent version of Auth.
   void* auth_impl = CreatePlatformAuth(app);
